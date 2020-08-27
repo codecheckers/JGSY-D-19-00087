@@ -1,0 +1,33 @@
+%YAML 1.1
+---
+version: https://codecheck.org.uk/spec/config/1.0/
+
+manifest:
+  - file: figure1.pdf
+    comment: Figure 1
+  - file: figure2.pdf
+    comment: Figure 2
+  - file: figure3.pdf
+    comment: Figure 3
+  - file: figure4a.pdf
+    comment: Figure 4a
+  - file: figure4b.pdf
+    comment: Figure 4b
+  - file: figure5.pdf
+    comment: Figure 5
+  - file: figure6.pdf
+    comment: Figure 6
+  - file: figure7.pdf
+    comment: Figure 7
+  - file: webmap1.png
+    comment: Figure 8
+  - file: output.Rout
+    comment: Verbatim console output captured by sink, including messages
+
+paper:
+  title: "Progress in the R ecosystem for representing and handling spatial data"
+  authors:
+    - name: Roger S. Bivand
+      ORCID: 0000-0003-2392-6140
+  reference: JGSY-D-19-00087
+

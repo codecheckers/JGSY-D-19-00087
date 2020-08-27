@@ -1,0 +1,888 @@
+
+> sink(zz, type = "message")
+
+> ###################################################
+> ### code chunk number 12: bivand_jgs_si1_rev2.Rnw:164-167
+> ################################## .... [TRUNCATED] 
+
+> dir.create(td)
+
+> Sys.setenv("PROJ_USER_WRITABLE_DIRECTORY"=td)
+
+> ###################################################
+> ### code chunk number 13: bivand_jgs_si1_rev2.Rnw:212-220 (eval = FALSE)
+> ################### .... [TRUNCATED] 
+
+> suppressPackageStartupMessages(library(miniCRAN))
+
+> suppressPackageStartupMessages(library(igraph))
+
+> suppressPackageStartupMessages(library(magrittr))
+
+> pg <- makeDepGraph(pdb[, "Package"], availPkgs = pdb, suggests=TRUE, enhances=TRUE, includeBasePkgs = FALSE)
+
+> pr <- pg %>%
++   page.rank(directed = FALSE) %>%
++   use_series("vector") %>%
++   sort(decreasing = TRUE) %>%
++   as.matrix %>%
++   set_colnames("pa ..." ... [TRUNCATED] 
+
+>   cutoff <- quantile(pr[, "page.rank"], probs = 0.2)
+
+> popular <- pr[pr[, "page.rank"] >= cutoff, ]
+
+> toKeep <- names(popular)
+
+> vids <- V(pg)[toKeep]
+
+> gs <- induced.subgraph(pg, vids = toKeep)
+
+> cl <- walktrap.community(gs, steps = 3)
+
+> topClusters <- table(cl$membership) %>%
++   sort(decreasing = TRUE) %>%
++   head(25)
+
+> cluster <- function(i, clusters, pagerank, n=10){
++   group <- clusters$names[clusters$membership == i]
++   pagerank[group, ] %>% sort(decreasing =  .... [TRUNCATED] 
+
+> z <- lapply(names(topClusters)[1:15], cluster, clusters=cl, pagerank=pr, n=50)
+
+> ## saveRDS(z, file="all_z_200820.rds")
+> 
+> 
+> ###################################################
+> ### code chunk number 15: bivand_jgs_si1_rev2.R .... [TRUNCATED] 
+
+> par(mar=c(4,4,2,1)+0.1)
+
+> suppressPackageStartupMessages(library(wordcloud))
+
+> ## z <- readRDS("all_z_200820.rds")
+> sp_cl <- which(sapply(z, function(x) "sp" %in% names(x)))
+
+> sf_cl <- which(sapply(z, function(x) "sf" %in% names(x)))
+
+> sp_range <- range(z[[sp_cl]])
+
+> sf_range <- range(z[[sf_cl]])
+
+> sp_pr <- unname(z[[sp_cl]]["sp"])
+
+> sf_pr <- unname(z[[sf_cl]]["sf"])
+
+> oopar <- par(mar=c(0,0,0,0)+0.1, mfrow=c(1,2))
+
+> for (i in c(sp_cl, sf_cl)) wordcloud(names(z[[i]]), freq=unname(z[[i]]), scale=c(3, 0.5))
+
+> par(oopar)
+
+> dev.off()
+null device 
+          1 
+
+> ###################################################
+> ### code chunk number 16: bivand_jgs_si1_rev2.Rnw:292-295
+> ################################## .... [TRUNCATED] 
+
+> df$c <- list(d=1, e="1", f=TRUE)
+
+> str(df)
+'data.frame':	3 obs. of  3 variables:
+ $ a: chr  "a" "b" "c"
+ $ b: int  1 2 3
+ $ c:List of 3
+  ..$ d: num 1
+  ..$ e: chr "1"
+  ..$ f: logi TRUE
+
+> ###################################################
+> ### code chunk number 17: bivand_jgs_si1_rev2.Rnw:302-303
+> ################################## .... [TRUNCATED] 
+Linking to GEOS 3.8.1, GDAL 3.1.2, PROJ 7.1.1
+
+> ###################################################
+> ### code chunk number 18: bivand_jgs_si1_rev2.Rnw:310-314
+> ################################## .... [TRUNCATED] 
+
+> pt2 <- pt1 + 1
+
+> pt3 <- pt2 + 1
+
+> str(pt3)
+ 'XY' num [1:2] 3 5
+
+> ###################################################
+> ### code chunk number 19: bivand_jgs_si1_rev2.Rnw:321-322
+> ################################## .... [TRUNCATED] 
+[1] "POINT (3 5)"
+
+> ###################################################
+> ### code chunk number 20: bivand_jgs_si1_rev2.Rnw:330-331
+> ################################## .... [TRUNCATED] 
+ [1] 01 01 00 00 00 00 00 00 00 00 00 08 40 00 00 00 00 00 00 14 40
+
+> ###################################################
+> ### code chunk number 21: bivand_jgs_si1_rev2.Rnw:338-340
+> ################################## .... [TRUNCATED] 
+
+> str(pt_sfc)
+sfc_POINT of length 3; first list element:  'XY' num [1:2] 1 3
+
+> ###################################################
+> ### code chunk number 22: bivand_jgs_si1_rev2.Rnw:347-348
+> ################################## .... [TRUNCATED] 
+Units: [m]
+         [,1]     [,2]     [,3]
+[1,] 0.000000 1.414214 2.828427
+[2,] 1.414214 0.000000 1.414214
+[3,] 2.828427 1.414214 0.000000
+
+> ###################################################
+> ### code chunk number 23: bivand_jgs_si1_rev2.Rnw:355-357
+> ################################## .... [TRUNCATED] 
+
+> st_distance(pt_sfc1)
+Units: [m]
+         [,1]     [,2]     [,3]
+[1,]      0.0 157106.0 314116.3
+[2,] 157106.0      0.0 157010.4
+[3,] 314116.3 157010.4      0.0
+
+> ###################################################
+> ### code chunk number 24: bivand_jgs_si1_rev2.Rnw:364-369
+> ################################## .... [TRUNCATED] 
+
+> mat[1,2] <- mat[2,1] <- s2::s2_distance(st_as_text(pt1), st_as_text(pt2))
+
+> mat[1,3] <- mat[3,1] <- s2::s2_distance(st_as_text(pt1), st_as_text(pt3))
+
+> mat[2,3] <- mat[3,2] <- s2::s2_distance(st_as_text(pt2), st_as_text(pt3))
+
+> mat
+         [,1]     [,2]     [,3]
+[1,]      0.0 157106.0 314116.3
+[2,] 157106.0      0.0 157010.4
+[3,] 314116.3 157010.4      0.0
+
+> ###################################################
+> ### code chunk number 25: bivand_jgs_si1_rev2.Rnw:377-379
+> ################################## .... [TRUNCATED] 
+
+> str(df)
+Classes ‘sf’ and 'data.frame':	3 obs. of  4 variables:
+ $ a       : chr  "a" "b" "c"
+ $ b       : int  1 2 3
+ $ c       :List of 3
+  ..$ d: num 1
+  ..$ e: chr "1"
+  ..$ f: logi TRUE
+ $ geometry:sfc_POINT of length 3; first list element:  'XY' num  1 3
+ - attr(*, "sf_column")= chr "geometry"
+ - attr(*, "agr")= Factor w/ 3 levels "constant","aggregate",..: NA NA NA
+  ..- attr(*, "names")= chr [1:3] "a" "b" "c"
+
+> ###################################################
+> ### code chunk number 26: bivand_jgs_si1_rev2.Rnw:388-390
+> ################################## .... [TRUNCATED] 
+
+> st_write(df, dsn=tf, quiet=TRUE)
+
+> ###################################################
+> ### code chunk number 28: bivand_jgs_si1_rev2.Rnw:400-402
+> ################################## .... [TRUNCATED] 
+
+> df1
+Simple feature collection with 3 features and 2 fields
+geometry type:  POINT
+dimension:      XY
+bbox:           xmin: 1 ymin: 3 xmax: 3 ymax: 5
+projected CRS:  WGS 84 / Pseudo-Mercator
+  a b        geom
+1 a 1 POINT (1 3)
+2 b 2 POINT (2 4)
+3 c 3 POINT (3 5)
+
+> ###################################################
+> ### code chunk number 29: bivand_jgs_si1_rev2.Rnw:409-410
+> ################################## .... [TRUNCATED] 
+Simple feature collection with 1 feature and 2 fields
+geometry type:  POINT
+dimension:      XY
+bbox:           xmin: 3 ymin: 5 xmax: 3 ymax: 5
+projected CRS:  WGS 84 / Pseudo-Mercator
+# A tibble: 1 x 3
+  a         b        geom
+* <chr> <int> <POINT [m]>
+1 c         3       (3 5)
+
+> ###################################################
+> ### code chunk number 30: bivand_jgs_si1_rev2.Rnw:417-419
+> ################################## .... [TRUNCATED] 
+
+> st_area(buf_df1)
+Units: [m^2]
+[1] 0.2826142 0.2826142 0.2826142
+
+> ###################################################
+> ### code chunk number 32: bivand_jgs_si1_rev2.Rnw:432-436
+> ################################## .... [TRUNCATED] 
+
+> plot(st_geometry(buf_df1))
+
+> plot(st_geometry(df1), add=TRUE, pch=4)
+
+> dev.off()
+null device 
+          1 
+
+> ###################################################
+> ### code chunk number 33: bivand_jgs_si1_rev2.Rnw:452-456
+> ################################## .... [TRUNCATED] 
+Loading required package: abind
+
+> fn <- system.file("tif/L7_ETMs.tif", package = "stars")
+
+> L7 <- read_stars(fn)
+
+> L7
+stars object with 3 dimensions and 1 attribute
+attribute(s):
+  L7_ETMs.tif    
+ Min.   :  1.00  
+ 1st Qu.: 54.00  
+ Median : 69.00  
+ Mean   : 68.91  
+ 3rd Qu.: 86.00  
+ Max.   :255.00  
+dimension(s):
+     from  to  offset delta                       refsys point values    
+x       1 349  288776  28.5 UTM Zone 25, Southern Hem... FALSE   NULL [x]
+y       1 352 9120761 -28.5 UTM Zone 25, Southern Hem... FALSE   NULL [y]
+band    1   6      NA    NA                           NA    NA   NULL    
+
+> ###################################################
+> ### code chunk number 34: bivand_jgs_si1_rev2.Rnw:463-465
+> ################################## .... [TRUNCATED] 
+
+> (s2.ndvi <- st_apply(L7, c("x", "y"), ndvi))
+stars object with 2 dimensions and 1 attribute
+attribute(s):
+     ndvi          
+ Min.   :-0.75342  
+ 1st Qu.:-0.20301  
+ Median :-0.06870  
+ Mean   :-0.06432  
+ 3rd Qu.: 0.18667  
+ Max.   : 0.58667  
+dimension(s):
+  from  to  offset delta                       refsys point values    
+x    1 349  288776  28.5 UTM Zone 25, Southern Hem... FALSE   NULL [x]
+y    1 352 9120761 -28.5 UTM Zone 25, Southern Hem... FALSE   NULL [y]
+
+> ###################################################
+> ### code chunk number 35: bivand_jgs_si1_rev2.Rnw:472-474
+> ################################## .... [TRUNCATED] 
+
+> L7p
+stars_proxy object with 1 attribute in file:
+$L7_ETMs.tif
+[1] "[...]/L7_ETMs.tif"
+
+dimension(s):
+     from  to  offset delta                       refsys point values    
+x       1 349  288776  28.5 UTM Zone 25, Southern Hem... FALSE   NULL [x]
+y       1 352 9120761 -28.5 UTM Zone 25, Southern Hem... FALSE   NULL [y]
+band    1   6      NA    NA                           NA    NA   NULL    
+
+> ###################################################
+> ### code chunk number 36: bivand_jgs_si1_rev2.Rnw:481-482
+> ################################## .... [TRUNCATED] 
+stars_proxy object with 1 attribute in file:
+$L7_ETMs.tif
+[1] "[...]/L7_ETMs.tif"
+
+dimension(s):
+     from  to  offset delta                       refsys point values    
+x       1 349  288776  28.5 UTM Zone 25, Southern Hem... FALSE   NULL [x]
+y       1 352 9120761 -28.5 UTM Zone 25, Southern Hem... FALSE   NULL [y]
+band    1   6      NA    NA                           NA    NA   NULL    
+call list:
+[[1]]
+st_apply(X = X, MARGIN = c("x", "y"), FUN = ndvi)
+
+
+> ###################################################
+> ### code chunk number 37: bivand_jgs_si1_rev2.Rnw:489-490
+> ################################## .... [TRUNCATED] 
+stars object with 2 dimensions and 6 attributes
+attribute(s):
+      X1               X2               X3               X4         
+ Min.   : 47.00   Min.   : 32.00   Min.   : 21.00   Min.   :  9.00  
+ 1st Qu.: 67.00   1st Qu.: 55.00   1st Qu.: 49.00   1st Qu.: 52.00  
+ Median : 78.00   Median : 66.00   Median : 63.00   Median : 63.00  
+ Mean   : 79.15   Mean   : 67.57   Mean   : 64.36   Mean   : 59.24  
+ 3rd Qu.: 89.00   3rd Qu.: 79.00   3rd Qu.: 77.00   3rd Qu.: 75.00  
+ Max.   :255.00   Max.   :255.00   Max.   :255.00   Max.   :255.00  
+      X5               X6         
+ Min.   :  1.00   Min.   :  1.00  
+ 1st Qu.: 63.00   1st Qu.: 32.00  
+ Median : 89.00   Median : 60.00  
+ Mean   : 83.18   Mean   : 59.98  
+ 3rd Qu.:112.00   3rd Qu.: 88.00  
+ Max.   :255.00   Max.   :255.00  
+dimension(s):
+  from  to  offset delta                       refsys point values    
+x    1 349  288776  28.5 UTM Zone 25, Southern Hem... FALSE   NULL [x]
+y    1 352 9120761 -28.5 UTM Zone 25, Southern Hem... FALSE   NULL [y]
+
+> ###################################################
+> ### code chunk number 38: bivand_jgs_si1_rev2.Rnw:497-500
+> ################################## .... [TRUNCATED] 
+
+> xm <- st_apply(L7, c("x", "y"), mean)
+
+> all.equal(xm[[1]], x6$mean)
+[1] TRUE
+
+> ###################################################
+> ### code chunk number 39: bivand_jgs_si1_rev2.Rnw:513-514
+> ################################## .... [TRUNCATED] 
+
+> ###################################################
+> ### code chunk number 40: bivand_jgs_si1_rev2.Rnw:521-525
+> ################################## .... [TRUNCATED] 
+
+> cI_fisher <- classIntervals(olinda$"DEPRIV", n=7, style="fisher")
+
+> set.seed(1)
+
+> cI_bclust <- classIntervals(olinda$"DEPRIV", n=7, style="bclust")
+Committee Member: 1(1) 2(1) 3(1) 4(1) 5(1) 6(1) 7(1) 8(1) 9(1) 10(1)
+Computing Hierarchical Clustering
+
+> ###################################################
+> ### code chunk number 41: bivand_jgs_si1_rev2.Rnw:533-534
+> ################################## .... [TRUNCATED] 
+
+> ###################################################
+> ### code chunk number 43: bivand_jgs_si1_rev2.Rnw:547-553
+> ################################## .... [TRUNCATED] 
+
+> oopar <- par(mar=c(4,3,0,1)+0.1, mfrow=c(1,2))
+
+> plot(cI_fisher, pal, xlab="fisher", main="", ylab="")
+
+> plot(cI_bclust, pal, xlab="bclust", main="", ylab="")
+
+> par(oopar)
+
+> dev.off()
+null device 
+          1 
+
+> ###################################################
+> ### code chunk number 44: bivand_jgs_si1_rev2.Rnw:562-576 (eval = FALSE)
+> ################### .... [TRUNCATED] 
+
+> plot(olinda[,"DEPRIV"], nbreaks=7, breaks="fisher", pal=pal, key.pos=NULL, main="")
+
+> #gridGraphics::grid.echo()
+> #library(grid)
+> #g1 <- grid.grab()
+> dev.off()
+null device 
+          1 
+
+> #x11()
+> pdf("figure4b.pdf")
+
+> library(cartography)
+
+> choroLayer(olinda, var="DEPRIV", method="fisher-jenks", nclass=7, col=pal, legend.values.rnd=3)
+
+> #gridGraphics::grid.echo()
+> #library(grid)
+> #g2 <- grid.grab()
+> dev.off()
+null device 
+          1 
+
+> ## save(g1, g2, file="g1g2.rda")
+> 
+> 
+> ###################################################
+> ### code chunk number 45: bivand_jgs_si1_rev2.Rnw:581 .... [TRUNCATED] 
+
+> o1 <- tm_shape(olinda) + tm_fill("DEPRIV", style="fisher", n=7, palette=pal)
+
+> o2 <- o1 + tm_borders(lwd=0.8)
+
+> ###################################################
+> ### code chunk number 48: bivand_jgs_si1_rev2.Rnw:615-618
+> ################################## .... [TRUNCATED] 
+
+> tmap_arrange(o1, o2, ncol=2)
+
+> dev.off()
+null device 
+          1 
+
+> ###################################################
+> ### code chunk number 49: bivand_jgs_si1_rev2.Rnw:627-631
+> ################################## .... [TRUNCATED] 
+
+> g1 <- ggplot(olinda) + geom_sf(aes(fill=DEPRIV))
+
+> g2 <- g1 + theme_void() + scale_fill_gradientn(colours=pal,
++   breaks=round(cI_fisher$brks, 3))
+
+> ###################################################
+> ### code chunk number 50: bivand_jgs_si1_rev2.Rnw:638-641
+> ################################## .... [TRUNCATED] 
+
+> gridExtra::grid.arrange(g1, g2, ncol=2, respect=TRUE)
+
+> dev.off()
+null device 
+          1 
+
+> ###################################################
+> ### code chunk number 51: bivand_jgs_si1_rev2.Rnw:650-652
+> ################################## .... [TRUNCATED] 
+
+> ###################################################
+> ### code chunk number 52: bivand_jgs_si1_rev2.Rnw:658-661
+> ################################## .... [TRUNCATED] 
+
+> gridExtra::grid.arrange(g2, g3, ncol=2, respect=TRUE)
+
+> dev.off()
+null device 
+          1 
+
+> ###################################################
+> ### code chunk number 53: bivand_jgs_si1_rev2.Rnw:673-683 (eval = FALSE)
+> ################### .... [TRUNCATED] 
+
+> deps_sp <- tools::package_dependencies(packages = "sp", pdb, which = c("Depends", "Imports"), recursive = TRUE, reverse = TRUE)
+
+> deps_sf <- tools::package_dependencies(packages = "sf", pdb, which = c("Depends", "Imports"), recursive = TRUE, reverse = TRUE)
+
+> deps_sp3 <- tools::package_dependencies(packages = "sp", pdb, which = c("Depends", "Imports", "Suggests"), recursive = TRUE, reverse = TRUE)
+
+> deps_sf3 <- tools::package_dependencies(packages = "sf", pdb, which = c("Depends", "Imports", "Suggests"), recursive = TRUE, reverse = TRUE)
+
+> deps_sp1 <- tools::package_dependencies(packages = "sp", pdb, which = c("Depends", "Imports"), recursive = FALSE, reverse = TRUE)
+
+> deps_sf1 <- tools::package_dependencies(packages = "sf", pdb, which = c("Depends", "Imports"), recursive = FALSE, reverse = TRUE)
+
+> deps_sp2 <- tools::package_dependencies(packages = "sp", pdb, which = c("Depends", "Imports", "Suggests"), recursive = FALSE, reverse = TRUE)
+
+> deps_sf2 <- tools::package_dependencies(packages = "sf", pdb, which = c("Depends", "Imports", "Suggests"), recursive = FALSE, reverse = TRUE)
+
+> ## save(deps_sp, deps_sf, deps_sp1, deps_sf1, deps_sp2, deps_sf2, deps_sp3, deps_sf3, file="deps_sp_sf_200820.rda")
+> 
+> 
+> ######################## .... [TRUNCATED] 
+
+> mat[1,1] <- length(deps_sp[[1]])
+
+> mat[2,1] <- length(deps_sf[[1]])
+
+> sp_sf <- match(deps_sp[[1]], deps_sf[[1]])
+
+> sf_sp <- match(deps_sf[[1]], deps_sp[[1]])
+
+> mat[4,1] <- length(deps_sf[[1]][is.na(sf_sp)])
+
+> mat[5,1] <- length(deps_sf[[1]][!is.na(sf_sp)])
+
+> mat[3,1] <- length(deps_sp[[1]][is.na(sp_sf)])
+
+> mat[1,4] <- length(deps_sp2[[1]])
+
+> mat[2,4] <- length(deps_sf2[[1]])
+
+> sp_sf2 <- match(deps_sp2[[1]], deps_sf2[[1]])
+
+> sf_sp2 <- match(deps_sf2[[1]], deps_sp2[[1]])
+
+> mat[4,4] <- length(deps_sf2[[1]][is.na(sf_sp2)])
+
+> mat[5,4] <- length(deps_sf2[[1]][!is.na(sf_sp2)])
+
+> mat[3,4] <- length(deps_sp2[[1]][is.na(sp_sf2)])
+
+> mat[1,2] <- length(deps_sp3[[1]])
+
+> mat[2,2] <- length(deps_sf3[[1]])
+
+> sp_sf3 <- match(deps_sp3[[1]], deps_sf3[[1]])
+
+> sf_sp3 <- match(deps_sf3[[1]], deps_sp3[[1]])
+
+> mat[4,2] <- length(deps_sf3[[1]][is.na(sf_sp3)])
+
+> mat[5,2] <- length(deps_sf3[[1]][!is.na(sf_sp3)])
+
+> mat[3,2] <- length(deps_sp3[[1]][is.na(sp_sf3)])
+
+> mat[1,3] <- length(deps_sp1[[1]])
+
+> mat[2,3] <- length(deps_sf1[[1]])
+
+> sp_sf1 <- match(deps_sp1[[1]], deps_sf1[[1]])
+
+> sf_sp1 <- match(deps_sf1[[1]], deps_sp1[[1]])
+
+> mat[4,3] <- length(deps_sf1[[1]][is.na(sf_sp1)])
+
+> mat[5,3] <- length(deps_sf1[[1]][!is.na(sf_sp1)])
+
+> mat[3,3] <- length(deps_sp1[[1]][is.na(sp_sf1)])
+
+> rownames(mat) <- c("Sum \\pkg{sp}", "Sum \\pkg{sf}", "Only \\pkg{sp}", "Only \\pkg{sf}", "Both")
+
+> colnames(mat) <- c("Recursive", "Recursive w/Suggests", "Not recursive", "Not recursive w/Suggests")
+
+> ###################################################
+> ### code chunk number 55: bivand_jgs_si1_rev2.Rnw:724-725
+> ################################## .... [TRUNCATED] 
+          GDAL GDAL_with_GEOS           PROJ             sp 
+       "3.1.2"         "TRUE"        "7.1.1"        "1.4-4" 
+
+> ###################################################
+> ### code chunk number 56: bivand_jgs_si1_rev2.Rnw:732-733
+> ################################## .... [TRUNCATED] 
+   GEOS      sp 
+"3.8.1" "1.4-4" 
+
+> ###################################################
+> ### code chunk number 57: bivand_jgs_si1_rev2.Rnw:740-741
+> ################################## .... [TRUNCATED] 
+          GEOS           GDAL         proj.4 GDAL_with_GEOS     USE_PROJ_H 
+       "3.8.1"        "3.1.2"        "7.1.1"         "true"         "true" 
+
+> ###################################################
+> ### code chunk number 58: bivand_jgs_si1_rev2.Rnw:751-753
+> ################################## .... [TRUNCATED] 
+
+> print(xtable(mat, align=c("l","r","r","r","r"), digits=c(NA, 0, 0, 0, 0), display=c("s", "d", "d", "d", "d")), floating=FALSE, comment=FALSE, saniti .... [TRUNCATED] 
+\begin{tabular}{lrrrr}
+  \hline
+ & Recursive & Recursive w/Suggests & Not recursive & Not recursive w/Suggests \\ 
+  \hline
+Sum \pkg{sp} & 1517 & 16619 & 522 & 629 \\ 
+  Sum \pkg{sf} & 297 & 16619 & 184 & 277 \\ 
+   \hline
+Only \pkg{sp} & 1285 & 0 & 459 & 513 \\ 
+  Only \pkg{sf} & 65 & 0 & 121 & 161 \\ 
+  Both & 232 & 16619 & 63 & 116 \\ 
+   \hline
+\end{tabular}
+
+> ###################################################
+> ### code chunk number 59: bivand_jgs_si1_rev2.Rnw:771-773
+> ################################## .... [TRUNCATED] 
+
+> b_pump_sf <- st_read(bp_file, quiet=TRUE)
+
+> ###################################################
+> ### code chunk number 60: bivand_jgs_si1_rev2.Rnw:780-788
+> ################################## .... [TRUNCATED] 
+
+> legacy <- st_crs(proj5)
+
+> proj6 <- legacy$proj4string
+
+> proj5_parts <- unlist(strsplit(proj5, " "))
+
+> proj6_parts <- unlist(strsplit(proj6, " "))
+
+> proj5_parts[!is.element(proj5_parts, proj6_parts)]
+[1] "+datum=OSGB36"
+
+> proj6_parts[!is.element(proj6_parts, proj5_parts)]
+[1] "+ellps=airy"
+
+> ###################################################
+> ### code chunk number 61: bivand_jgs_si1_rev2.Rnw:795-797
+> ################################## .... [TRUNCATED] 
+
+> st_crs(b_pump_sf1) <- st_crs(st_crs(b_pump_sf1)$proj4string)
+
+> ###################################################
+> ### code chunk number 62: bivand_jgs_si1_rev2.Rnw:804-806
+> ################################## .... [TRUNCATED] 
+[1] TRUE
+
+> ###################################################
+> ### code chunk number 63: bivand_jgs_si1_rev2.Rnw:813-816
+> ################################## .... [TRUNCATED] 
+
+> b_pump_sf1_ll <- st_transform(b_pump_sf1, 4326)
+
+> st_distance(b_pump_sf_ll, b_pump_sf1_ll)
+Units: [m]
+         [,1]
+[1,] 124.7286
+
+> ###################################################
+> ### code chunk number 64: bivand_jgs_si1_rev2.Rnw:821-828
+> ################################## .... [TRUNCATED] 
+GDAL version >= 3.1.0 | setting mapviewOptions(fgb = TRUE)
+
+> if (sf:::CPL_gdal_version() >= "3.1.0") mapviewOptions(fgb = FALSE)
+
+> pts <- rbind(b_pump_sf_ll, b_pump_sf1_ll)
+
+> pts$CRS <- c("original", "degraded")
+
+> webmap1 <- mapview(pts, zcol="CRS", map.type="OpenStreetMap", col.regions=c("green", "red"), cex=18)
+
+> ##webmap1
+> mapshot(webmap1, file="webmap1.png")
+
+> ## magick::image_write(magick::image_read("webmap1.png"), path="webmap1.eps", format="eps")
+> 
+> 
+> ################################################ .... [TRUNCATED] 
+Coordinate Reference System:
+  User input: EPSG:4326 
+  wkt:
+GEOGCRS["WGS 84",
+    DATUM["World Geodetic System 1984",
+        ELLIPSOID["WGS 84",6378137,298.257223563,
+            LENGTHUNIT["metre",1]]],
+    PRIMEM["Greenwich",0,
+        ANGLEUNIT["degree",0.0174532925199433]],
+    CS[ellipsoidal,2],
+        AXIS["geodetic latitude (Lat)",north,
+            ORDER[1],
+            ANGLEUNIT["degree",0.0174532925199433]],
+        AXIS["geodetic longitude (Lon)",east,
+            ORDER[2],
+            ANGLEUNIT["degree",0.0174532925199433]],
+    USAGE[
+        SCOPE["unknown"],
+        AREA["World"],
+        BBOX[-90,-180,90,180]],
+    ID["EPSG",4326]]
+
+> ###################################################
+> ### code chunk number 66: bivand_jgs_si1_rev2.Rnw:855-857
+> ################################## .... [TRUNCATED] 
+
+> cat(wkt(CRS(SRS_string="EPSG:4326")), "\n")
+GEOGCRS["WGS 84",
+    DATUM["World Geodetic System 1984",
+        ELLIPSOID["WGS 84",6378137,298.257223563,
+            LENGTHUNIT["metre",1]],
+        ID["EPSG",6326]],
+    PRIMEM["Greenwich",0,
+        ANGLEUNIT["degree",0.0174532925199433],
+        ID["EPSG",8901]],
+    CS[ellipsoidal,2],
+        AXIS["longitude",east,
+            ORDER[1],
+            ANGLEUNIT["degree",0.0174532925199433,
+                ID["EPSG",9122]]],
+        AXIS["latitude",north,
+            ORDER[2],
+            ANGLEUNIT["degree",0.0174532925199433,
+                ID["EPSG",9122]]],
+    USAGE[
+        SCOPE["unknown"],
+        AREA["World"],
+        BBOX[-90,-180,90,180]]] 
+
+> ###################################################
+> ### code chunk number 67: bivand_jgs_si1_rev2.Rnw:864-867
+> ################################## .... [TRUNCATED] 
+
+> o <- strsplit(sf_from_sp$wkt, "\n")[[1]]
+
+> cat(paste(o[grep("CS|AXIS|ORDER", o)], collapse="\n"))
+    CS[ellipsoidal,2],
+        AXIS["longitude",east,
+            ORDER[1],
+        AXIS["latitude",north,
+            ORDER[2],
+> ###################################################
+> ### code chunk number 68: bivand_jgs_si1_rev2.Rnw:872-875
+> ################################## .... [TRUNCATED] 
+
+> o <- strsplit(wkt(sp_from_sf), "\n")[[1]]
+
+> cat(paste(o[grep("CS|AXIS|ORDER", o)], collapse="\n"))
+    CS[ellipsoidal,2],
+        AXIS["geodetic latitude (Lat)",north,
+            ORDER[1],
+        AXIS["geodetic longitude (Lon)",east,
+            ORDER[2],
+> ###################################################
+> ### code chunk number 69: bivand_jgs_si1_rev2.Rnw:884-886
+> ################################## .... [TRUNCATED] 
+
+> b_pump_sp1 <- as(b_pump_sf1, "Spatial")
+
+> ###################################################
+> ### code chunk number 71: bivand_jgs_si1_rev2.Rnw:898-899
+> ################################## .... [TRUNCATED] 
+rgdal: version: 1.5-17, (SVN revision 1056)
+Geospatial Data Abstraction Library extensions to R successfully loaded
+Loaded GDAL runtime: GDAL 3.1.2, released 2020/07/07
+Path to GDAL shared files: /usr/local/share/gdal
+GDAL binary built with GEOS: TRUE 
+Loaded PROJ runtime: Rel. 7.1.1, September 1st, 2020, [PJ_VERSION: 711]
+Path to PROJ shared files: /tmp/RtmpqmmT5L/file1e8255ab6698:/usr/local/share/proj:/usr/local/share/proj
+PROJ CDN enabled: FALSE
+Linking to sp version:1.4-4
+To mute warnings of possible GDAL/OSR exportToProj4() degradation,
+use options("rgdal_show_exportToProj4_warnings"="none") before loading rgdal.
+
+> ###################################################
+> ### code chunk number 72: bivand_jgs_si1_rev2.Rnw:906-913
+> ################################## .... [TRUNCATED] 
+
+> o <- list_coordOps(WKT, "EPSG:4326")
+
+> c(nrow(o), nrow(o[o$instantiable,]), sum(o$number_grids))
+[1] 8 7 1
+
+> aoi0 <- project(t(unclass(bbox(b_pump_sp))), WKT, inv=TRUE)
+
+> aoi <- c(t(aoi0 + c(-0.1, +0.1)))
+
+> o_aoi <- list_coordOps(WKT, "EPSG:4326", area_of_interest=aoi)
+
+> c(nrow(o_aoi), nrow(o_aoi[o_aoi$instantiable,]), sum(o_aoi$number_grids))
+[1] 5 4 1
+
+> ###################################################
+> ### code chunk number 73: bivand_jgs_si1_rev2.Rnw:922-924
+> ################################## .... [TRUNCATED] 
+
+> cat(strwrap(get_last_coordOp()), sep="\n")
++proj=pipeline +step +inv +proj=tmerc +lat_0=49 +lon_0=-2 +k=0.999601
++x_0=400000 +y_0=-100000 +ellps=airy +step +proj=push +v_3 +step
++proj=cart +ellps=airy +step +proj=helmert +x=446.448 +y=-125.157
++z=542.06 +rx=0.15 +ry=0.247 +rz=0.842 +s=-20.489
++convention=position_vector +step +inv +proj=cart +ellps=WGS84 +step
++proj=pop +v_3 +step +proj=unitconvert +xy_in=rad +xy_out=deg
+
+> ###################################################
+> ### code chunk number 74: bivand_jgs_si1_rev2.Rnw:931-935
+> ################################## .... [TRUNCATED] 
+
+> cat(nrow(o), o$ballpark, "\n")
+1 TRUE 
+
+> b_pump_sp1_ll <- spTransform(b_pump_sp1, CRS(SRS_string="EPSG:4326"))
+
+> cat(strwrap(get_last_coordOp()), sep="\n")
++proj=pipeline +step +inv +proj=tmerc +lat_0=49 +lon_0=-2 +k=0.999601
++x_0=400000 +y_0=-100000 +ellps=airy +step +proj=unitconvert +xy_in=rad
++xy_out=deg
+
+> ###################################################
+> ### code chunk number 75: bivand_jgs_si1_rev2.Rnw:944-946
+> ################################## .... [TRUNCATED] 
+[1] "Using: /tmp/RtmpqmmT5L/file1e8255ab6698"
+
+> list.files(td)
+character(0)
+
+> ###################################################
+> ### code chunk number 76: bivand_jgs_si1_rev2.Rnw:953-957
+> ################################## .... [TRUNCATED] 
+
+> c(nrow(o), nrow(o[o$instantiable,]), sum(o$number_grids))
+[1] 5 5 1
+
+> b_pump_sp_llg <- spTransform(b_pump_sp, CRS(SRS_string="EPSG:4326"))
+
+> cat(strwrap(get_last_coordOp()), sep="\n")
++proj=pipeline +step +inv +proj=tmerc +lat_0=49 +lon_0=-2 +k=0.999601
++x_0=400000 +y_0=-100000 +ellps=airy +step +proj=hgridshift
++grids=uk_os_OSTN15_NTv2_OSGBtoETRS.tif +step +proj=unitconvert
++xy_in=rad +xy_out=deg
+
+> ###################################################
+> ### code chunk number 77: bivand_jgs_si1_rev2.Rnw:964-967
+> ################################## .... [TRUNCATED] 
+[1] "cache.db"
+
+> file.size(file.path(td, list.files(td)[1]))
+[1] 319488
+
+> disable_proj_CDN()
+
+> ###################################################
+> ### code chunk number 78: bivand_jgs_si1_rev2.Rnw:974-978
+> ################################## .... [TRUNCATED] 
+[1] 125.057683   1.751474
+
+> all.equal(unname(coordinates(b_pump_sp_ll)),
++           unname(st_coordinates(st_geometry(b_pump_sf_ll))))
+[1] TRUE
+
+> sessionInfo()
+R version 4.0.2 (2020-06-22)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Fedora 32 (Workstation Edition)
+
+Matrix products: default
+BLAS:   /home/rsb/topics/R/R402-share/lib64/R/lib/libRblas.so
+LAPACK: /home/rsb/topics/R/R402-share/lib64/R/lib/libRlapack.so
+
+locale:
+ [1] LC_CTYPE=en_GB.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_GB.UTF-8        LC_COLLATE=en_GB.UTF-8    
+ [5] LC_MONETARY=en_GB.UTF-8    LC_MESSAGES=en_GB.UTF-8   
+ [7] LC_PAPER=en_GB.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_GB.UTF-8 LC_IDENTIFICATION=C       
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] rgdal_1.5-17       sp_1.4-4           mapview_2.9.1      xtable_1.8-4      
+ [5] ggplot2_3.3.2      tmap_3.1           cartography_2.4.1  classInt_0.4-3    
+ [9] stars_0.4-3        abind_1.4-5        sf_0.9-6           wordcloud_2.6     
+[13] RColorBrewer_1.1-2 magrittr_1.5       igraph_1.2.5       miniCRAN_0.2.13   
+
+loaded via a namespace (and not attached):
+ [1] httr_1.4.2              jsonlite_1.7.0          viridisLite_0.3.0      
+ [4] assertthat_0.2.1        stats4_4.0.2            yaml_2.2.1             
+ [7] gdtools_0.2.2           pillar_1.4.6            lattice_0.20-41        
+[10] glue_1.4.1              uuid_0.1-4              digest_0.6.25          
+[13] leaflet.providers_1.9.0 colorspace_1.4-1        htmltools_0.5.0        
+[16] XML_3.99-0.5            pkgconfig_2.0.3         raster_3.3-13          
+[19] s2_1.0.2                purrr_0.3.4             scales_1.1.1           
+[22] webshot_0.5.2           processx_3.4.3          brew_1.0-6             
+[25] svglite_1.2.3.2         satellite_1.0.2         tibble_3.0.3           
+[28] rcartocolor_2.0.0       generics_0.0.2          farver_2.0.3           
+[31] ellipsis_0.3.1          withr_2.2.0             leafsync_0.1.0         
+[34] cli_2.0.2               crayon_1.3.4            ps_1.3.4               
+[37] fansi_0.4.1             lwgeom_0.2-5            class_7.3-17           
+[40] tools_4.0.2             lifecycle_0.2.0         munsell_0.5.0          
+[43] callr_3.4.3             compiler_4.0.2          e1071_1.7-3            
+[46] systemfonts_0.2.3       rlang_0.4.7             units_0.6-7            
+[49] grid_4.0.2              tmaptools_3.1           leafpop_0.0.5          
+[52] dichromat_2.0-0         htmlwidgets_1.5.1       crosstalk_1.1.0.1      
+[55] leafem_0.1.3            base64enc_0.1-3         labeling_0.3           
+[58] wk_0.3.2                gtable_0.3.0            codetools_0.2-16       
+[61] DBI_1.1.0               R6_2.4.1                gridExtra_2.3          
+[64] dplyr_1.0.2             rgeos_0.5-3             utf8_1.1.4             
+[67] KernSmooth_2.23-17      parallel_4.0.2          Rcpp_1.0.5             
+[70] vctrs_0.3.2             png_0.1-7               leaflet_2.0.3          
+[73] tidyselect_1.1.0       
+
+> sink(type = "message")
+
+> sink()
