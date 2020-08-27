@@ -73,6 +73,8 @@
 
 > sf_pr <- unname(z[[sf_cl]]["sf"])
 
+> set.seed(1)
+
 > oopar <- par(mar=c(0,0,0,0)+0.1, mfrow=c(1,2))
 
 > for (i in c(sp_cl, sf_cl)) wordcloud(names(z[[i]]), freq=unname(z[[i]]), scale=c(3, 0.5))
@@ -101,7 +103,6 @@ null device
 > ###################################################
 > ### code chunk number 17: bivand_jgs_si1_rev2.Rnw:302-303
 > ################################## .... [TRUNCATED] 
-Linking to GEOS 3.8.1, GDAL 3.1.2, PROJ 7.1.1
 
 > ###################################################
 > ### code chunk number 18: bivand_jgs_si1_rev2.Rnw:310-314
@@ -241,7 +242,6 @@ null device
 > ###################################################
 > ### code chunk number 33: bivand_jgs_si1_rev2.Rnw:452-456
 > ################################## .... [TRUNCATED] 
-Loading required package: abind
 
 > fn <- system.file("tif/L7_ETMs.tif", package = "stars")
 
@@ -633,7 +633,6 @@ Units: [m]
 > ###################################################
 > ### code chunk number 64: bivand_jgs_si1_rev2.Rnw:821-828
 > ################################## .... [TRUNCATED] 
-GDAL version >= 3.1.0 | setting mapviewOptions(fgb = TRUE)
 
 > if (sf:::CPL_gdal_version() >= "3.1.0") mapviewOptions(fgb = FALSE)
 
@@ -732,17 +731,6 @@ GEOGCRS["WGS 84",
 > ###################################################
 > ### code chunk number 71: bivand_jgs_si1_rev2.Rnw:898-899
 > ################################## .... [TRUNCATED] 
-rgdal: version: 1.5-17, (SVN revision 1056)
-Geospatial Data Abstraction Library extensions to R successfully loaded
-Loaded GDAL runtime: GDAL 3.1.2, released 2020/07/07
-Path to GDAL shared files: /usr/local/share/gdal
-GDAL binary built with GEOS: TRUE 
-Loaded PROJ runtime: Rel. 7.1.1, September 1st, 2020, [PJ_VERSION: 711]
-Path to PROJ shared files: /tmp/RtmpqmmT5L/file1e8255ab6698:/usr/local/share/proj:/usr/local/share/proj
-PROJ CDN enabled: FALSE
-Linking to sp version:1.4-4
-To mute warnings of possible GDAL/OSR exportToProj4() degradation,
-use options("rgdal_show_exportToProj4_warnings"="none") before loading rgdal.
 
 > ###################################################
 > ### code chunk number 72: bivand_jgs_si1_rev2.Rnw:906-913
@@ -791,7 +779,7 @@ use options("rgdal_show_exportToProj4_warnings"="none") before loading rgdal.
 > ###################################################
 > ### code chunk number 75: bivand_jgs_si1_rev2.Rnw:944-946
 > ################################## .... [TRUNCATED] 
-[1] "Using: /tmp/RtmpqmmT5L/file1e8255ab6698"
+[1] "Using: /tmp/RtmpFtTz8z/file21f6fa35e2d"
 
 > list.files(td)
 character(0)
@@ -814,10 +802,10 @@ character(0)
 > ###################################################
 > ### code chunk number 77: bivand_jgs_si1_rev2.Rnw:964-967
 > ################################## .... [TRUNCATED] 
-[1] "cache.db"
+character(0)
 
 > file.size(file.path(td, list.files(td)[1]))
-[1] 319488
+[1] NA
 
 > disable_proj_CDN()
 

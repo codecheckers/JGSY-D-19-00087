@@ -69,7 +69,7 @@ In this test run:
 `sf` current status of https://github.com/r-spatial/sf as of 27 August 2020
 `rgdal` revision 1056 of https://r-forge.r-project.org/R/?group_id=884
 
-Chunks 75-75 require PROJ >= 7 (with PROJ 6, gives same result as Helmert tramsformation). Script also runs OK with R 4.0.2 on Windows with CRAN versions of all packages.
+Chunks 75-75 require PROJ >= 7 (with PROJ 6, gives same result as Helmert tramsformation). Script also runs OK with R 4.0.2 on Windows with CRAN versions of all packages. It is conceivable that the `wordcloud` output in Figure 1 should also use set.seed(), which was not included in the article but is added here - the placing, but not the relative sizes of the words may be affected.
 
 Output: 
 
