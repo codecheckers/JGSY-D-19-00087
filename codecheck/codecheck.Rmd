@@ -1,0 +1,260 @@
+---
+output:
+  pdf_document:
+    toc: false
+    includes:
+       in_header: codecheck-preamble.sty
+---
+
+```{r rsetup,eval=TRUE,include=FALSE}
+require(codecheck)
+require(knitr)
+require(rprojroot)
+require(yaml)
+require(xtable)
+require(tibble)
+require(readr)
+options(width=60)
+opts_chunk$set(cache=FALSE)
+
+root = find_root("codecheck.yml")
+```
+
+```{r codecheck_logo, echo=FALSE,results='asis'}
+latex_codecheck_logo()
+```
+
+```{r manifest, eval=TRUE, include=FALSE}
+metadata = codecheck_metadata(root)
+manifest = metadata$manifest
+
+dest_dir = file.path(root, "codecheck", "outputs")
+## Create the outputs directory if missing
+if ( !dir.exists(dest_dir) ) {
+  dir.create(dest_dir)
+}
+```
+
+```{r manifest_list, eval=TRUE, include=FALSE}
+manifest_df = list_manifest_files(root, metadata, dest_dir)
+```
+
+```{r manifest_copy, eval=FALSE, include=FALSE}
+# RUN THIS MANUALLY IF YOU WANT TO COPY THE RESULT FILES
+manifest_df = copy_manifest_files(root, metadata,
+                                  dest_dir, keep_full_path=FALSE)
+```
+
+---
+title: `r paste("CODECHECK certificate", metadata$certificate)`
+subtitle: `r codecheck:::as_latex_url(metadata$report)`
+---
+
+```{r summary_metadata, echo=FALSE, results='asis'}
+latex_summary_of_metadata(metadata)
+```
+
+```{r summary_manifest, echo=FALSE, results='asis'}
+latex_summary_of_manifest(metadata, manifest_df, root)
+```
+
+
+# Summary
+
+This code was very straightforward to codecheck.
+It contained a couple of data files and a well-organised R script, with a reasonable documentation of the computing environment/versions.
+The 
+
+[... ADD MORE INTERESTING FINDINGS HERE..]
+
+\clearpage
+
+# CODECHECKER notes
+
+I started this check by forking the author's GitHub repository at [https://github.com/rsbivand/JGSY-D-19-00087](https://github.com/rsbivand/JGSY-D-19-00087) to the [codecheckers organisation](https://github.com/codecheckers/JGSY-D-19-00087).
+The author already provided a partial `codecheck.yml`, which I extended with the check-related metadata.
+
+The project's README contains a clear listing of output files, contained data files, and the script file.
+The main sript is written in R, in the file `bivand_jgs_si1_rev2.R`.
+The name apparently reflects the revision of the the article currently sent to peer review, which is also made available to me.
+The R script includes a number of code chunks, extracted from an Rnw vignette the author used to write the paper.
+The code is generally well formatted and understandable and was updated to save output figures into separate files (with transparent naming), and to use a seed for the word cloud.
+These changes are most welcome as the greatly ease the codechecking process.
+All code output is also captured in a text file `output.Rout`, which allows a detailed comparison of the results by the author and my own.
+
+I opened the script in my local RStudio instance and installed the missing packages detected by RStudio.
+Then I ran
+
+```r
+source("bivand_jgs_si1_rev2.R", echo=TRUE)
+```
+
+This took just a few minutes to complete on my laptop.
+
+Inspecting the output log file, I saw there are a few minor numerical differences in two code chunks, as shown in the excerpts below from the output of `git diff`, comparing my changes with the original from the author:
+
+```
+[...]
+
+@@ -148,9 +148,9 @@ Units: [m]
+ > st_distance(pt_sfc1)
+ Units: [m]
+          [,1]     [,2]     [,3]
+-[1,]      0.0 157106.0 314116.3
+-[2,] 157106.0      0.0 157010.4
+-[3,] 314116.3 157010.4      0.0
++[1,]      0.0 156759.1 313424.7
++[2,] 156759.1      0.0 156665.6
++[3,] 313424.7 156665.6      0.0
+
+[...]
+
+ > ###################################################
+ > ### code chunk number 58: bivand_jgs_si1_rev2.Rnw:751-753
+@@ -628,7 +628,7 @@ Only \pkg{sp} & 1285 & 0 & 459 & 513 \\
+ > st_distance(b_pump_sf_ll, b_pump_sf1_ll)
+ Units: [m]
+          [,1]
+-[1,] 124.7286
++[1,] 125.0578
+```
+
+These are negligible numerical differences, which are repeatable on my system.
+I am less sure about the following difference though:
+
+```
+[...]
+ > ### code chunk number 78: bivand_jgs_si1_rev2.Rnw:974-978
+ > ################################## .... [TRUNCATED] 
+-[1] 125.057683   1.751474
++[1] 125.0577   0.0000
+[...]
+```
+
+The diff also shows the differences in package versions and operating system.
+
+```
+[...]
+
+ > ### code chunk number 55: bivand_jgs_si1_rev2.Rnw:724-725
+ > ################################## .... [TRUNCATED] 
+           GDAL GDAL_with_GEOS           PROJ             sp 
+-       "3.1.2"         "TRUE"        "7.1.1"        "1.4-4" 
++       "3.0.4"         "TRUE"        "6.3.1"        "1.4-2" 
+ 
+ > ###################################################
+ > ### code chunk number 56: bivand_jgs_si1_rev2.Rnw:732-733
+ > ################################## .... [TRUNCATED] 
+    GEOS      sp 
+-"3.8.1" "1.4-4" 
++"3.8.0" "1.4-2" 
+ 
+ > ###################################################
+ > ### code chunk number 57: bivand_jgs_si1_rev2.Rnw:740-741
+ > ################################## .... [TRUNCATED] 
+           GEOS           GDAL         proj.4 GDAL_with_GEOS     USE_PROJ_H 
+-       "3.8.1"        "3.1.2"        "7.1.1"         "true"         "true" 
++       "3.8.0"        "3.0.4"        "6.3.1"         "true"         "true"
+[...]
+
+ > sessionInfo()
+ R version 4.0.2 (2020-06-22)
+ Platform: x86_64-pc-linux-gnu (64-bit)
+-Running under: Fedora 32 (Workstation Edition)
++Running under: Ubuntu 20.04 LTS
+```
+
+These differences can be further inspected by comparing the original and reproduction output files:
+
+```bash
+diff codecheck/outputs/output.Rout output.Rout
+```
+
+The output PDFs seems to only differ in the creation date (diff algorithm of used git tool, GitKraken), e.g.:
+
+```
+[...]
+<<
+-/CreationDate (D:20200827122727)
+-/ModDate (D:20200827122727)
++/CreationDate (D:20200829091449)
++/ModDate (D:20200829091449)
+/Title (R Graphics Output)
+[...]
+```
+
+and "appear to be the same" according to the tool `diffpdf`.
+
+[A problem](https://github.com/r-spatial/mapview/issues/312#issuecomment-683247697) with package `mapview`, which I had in CRAN version (`2.9.0` at the time of check), but the author had at `2.9.1`, could be resolved with package version `2.9.2` installed with `remotes::install_github("r-spatial/mapview")`.
+
+**A visual inspection** of the plots yielded absolutely no differences between the reproduced figures (see below) and the originals, including matching numbers in legends, with the negligible exception of slight deviations because of aspect ratios.
+
+The reproduction of the computations was straightforward, partly attributed to the timing: the review happens so closely to the author's creation of the analysis that the "current" status of CRAN packages simply works.
+For the future, the author may consider providing additional layers of pinning versions, such as `renv` or a Dockerfile using MRAN, approaches which are of course also available for future users of the code.
+
+\clearpage
+
+## Reproduced outputs
+
+```{r, echo=FALSE, results="asis"}
+for(i in c(1:nrow(manifest_df))) {
+  path <- manifest_df[i,"dest"]
+  if(stringr::str_ends(path, "(png|pdf|jpg)")) {
+    # include graphics with knitr has to happen at top level in chunks, see https://github.com/yihui/knitr/issues/1260
+    # see also https://stackoverflow.com/questions/51268623/insert-images-using-knitrinclude-graphics-in-a-for-loop
+    # knitr::include_graphics(manifest_df[1, "dest"], error = TRUE)
+    # Therefore, generate Markdown code here:
+    cat("### ", basename(path), "\n\n")
+    cat("**Comment:** ", manifest_df[i,"comment"], "\n\n")
+    cat(paste0("![", "Test ", "](", path, ")\n"))
+  } else if (stringr::str_ends(path, "(Rout|txt)")) {
+    cat("**File: ", basename(path), "**\n\n")
+    cat("\\scriptsize \n\n", "```txt\n")
+    cat(readLines(path), sep = "\n")
+    cat("\n\n``` \n\n", "\\normalsize \n\n")
+  } else {
+    cat("**File: ", basename(path), "**\n\n")
+    cat("Cannot inlcude output file as figure.")
+  }
+  
+  cat("\\clearpage \n\n")
+}
+```
+
+\clearpage
+
+## Acknowledgements
+
+I thank JGSY editor Antonio Paez for his open-mindedness and interest in CODECHECK.
+CODECHECK is financially supported by the Mozilla foundation.
+
+# Citing this document
+
+```{r, results='asis',echo=FALSE}
+cite_certificate(metadata)
+```
+
+# About CODECHECK
+
+This certificate confirms that the codechecker could independently
+reproduce the results of a computational analysis given the data and
+code from a third party.  A CODECHECK does not check whether the
+original computation analysis is correct.  However, as all materials
+required for the reproduction are freely available by following the
+links in this document, the reader can then study for themselves the
+code and data.
+
+
+# About this document
+
+This document was created using [R Markdown](https://rmarkdown.rstudio.com/) using the [`codecheck`](https://github.com/codecheckers/codecheck) R package.
+`make codecheck.pdf` will regenerate the report file.
+
+```{r}
+sessionInfo()
+```
+
+```{r, include=FALSE, eval=FALSE}
+# render this document in RStudio
+rmarkdown::render("codecheck.Rmd", output_format = "pdf_document") 
+```

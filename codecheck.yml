@@ -29,5 +29,15 @@ paper:
   authors:
     - name: Roger S. Bivand
       ORCID: 0000-0003-2392-6140
-  reference: JGSY-D-19-00087
+  reference: TODO
 
+codechecker:
+  - name: Daniel Nüst
+    ORCID: 0000-0002-0024-5046
+
+report: https://doi.org/10.5281/zenodo.4003848
+summary: |
+    Successful check of well-organised R script. All figures match the ones provided by the author.
+repository: https://github.com/codecheckers/JGSY-D-19-00087
+check_time: 2020-08-27
+certificate: 2020-017
