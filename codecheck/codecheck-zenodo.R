@@ -2,27 +2,12 @@
 
 library("codecheck")
 
-## This assumes your working directory is the codecheck directory
-metadata = read_yaml( "../codecheck.yml")
+metadata = yaml::read_yaml( "codecheck.yml")
+my_token = zenodoToken
 
-## To interact with the Zenodo API, you need to create a token.  This should
-## not be shared, or stored in this script.  Here I am using the Unix password
-## tool pass to retrieve the token.
-my_token = system("pass show codechecker-token", intern=TRUE)
+zenodo <- zen4R::ZenodoManager$new(token = my_token)
 
-## Alternatively, you might want to load the token manually or save it in you
-## Rprofile, which you can open with usethis::edit_r_profile()
-
-## make a connection to Zenodo API
-zenodo <- ZenodoManager$new(token = my_token)
-
-
-## If you wish to create a new record on zenodo, run the following line once
-## and then store the URL of the record in  ../codecheck.yml
-## This will generate a new record every time that you run it and 
-## save the new record ID in the codecheck configuration file:
-## record = create_zenodo_record(zenodo); metadata = read_yaml( "../codecheck.yml")
-
+# record was manually created
 record = get_zenodo_record(metadata$report)
 codecheck:::set_zenodo_metadata(zenodo, record, metadata)
 
@@ -30,8 +15,13 @@ codecheck:::set_zenodo_metadata(zenodo, record, metadata)
 ## delete it via the web page before uploading it again.
 ## codecheck:::set_zenodo_certificate(zenodo, record, "codecheck.pdf")
 
+codecheck:::set_zenodo_certificate(zenodo, record, "codecheck/codecheck.pdf")
+# you can confirm the file validity by running md5sum codecheck.pdf locally
+
 ## You may also create a ZIP archive of of any data or code files that
 ## you think should be included in the CODECHECK's record.
+zip::zip("JGSY-D-19-00087.zip", list.files(".", recursive = TRUE, all.files = TRUE), recurse = TRUE)
 
-## Now go to zenodo and check the record (the URL is printed
-## by set_zenodo_metadata() ) and then publish.
+zenodo$uploadFile("JGSY-D-19-00087.zip", record)
+
+## Now go to zenodo and check the record, add a link 
