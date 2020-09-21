@@ -58,14 +58,11 @@ latex_summary_of_metadata(metadata)
 latex_summary_of_manifest(metadata, manifest_df, root)
 ```
 
-
 # Summary
 
 This code was very straightforward to codecheck.
 It contained a couple of data files and a well-organised R script, with a reasonable documentation of the computing environment/versions.
-The 
-
-[... ADD MORE INTERESTING FINDINGS HERE..]
+The reproduced figures match the ones from the original manuscript.
 
 \clearpage
 
@@ -185,7 +182,9 @@ The output PDFs seems to only differ in the creation date (diff algorithm of use
 
 and "appear to be the same" according to the tool `diffpdf`.
 
-[A problem](https://github.com/r-spatial/mapview/issues/312#issuecomment-683247697) with package `mapview`, which I had in CRAN version (`2.9.0` at the time of check), but the author had at `2.9.1`, could be resolved with package version `2.9.2` installed with `remotes::install_github("r-spatial/mapview")`.
+[A problem](https://github.com/r-spatial/mapview/issues/312#issuecomment-683247697) with package `mapview`, which I had in CRAN version (`2.9.0` at the time of check), but the author had at `2.9.1`, could be resolved with package version `2.9.2` installed with
+
+`remotes::install_github("r-spatial/mapview")`
 
 **A visual inspection** of the plots yielded absolutely no differences between the reproduced figures (see below) and the originals, including matching numbers in legends, with the negligible exception of slight deviations because of aspect ratios.
 
